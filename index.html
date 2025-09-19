@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Vercel JSON Starter</title>
+  <style>
+    body { font-family: system-ui, sans-serif; margin: 24px; }
+    .row { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px; }
+    input, button, textarea { padding:10px; border:1px solid #ccc; border-radius:8px; }
+    pre { background:#f6f6f6; padding:12px; border-radius:8px; overflow:auto; }
+  </style>
+</head>
+<body>
+  <h1>Vercel JSON Starter</h1>
+  <p>• <a href="/data.json" target="_blank">Lihat JSON statis</a> • <code>/api/jsonbin</code> untuk CRUD</p>
+
+  <h2>GET</h2>
+  <button id="btnGet">GET /api/jsonbin</button>
+  <pre id="getOut">(hasil GET muncul di sini)</pre>
+
+  <h2>POST (append satu item)</h2>
+  <div class="row">
+    <input id="postText" placeholder="tulis item (teks)" />
+    <button id="btnPost">POST</button>
+  </div>
+  <pre id="postOut">(hasil POST)</pre>
+
+  <h2>PUT (replace seluruh dokumen)</h2>
+  <textarea id="putBody" rows="8" cols="60">{ "items": ["a", "b"] }</textarea>
+  <div class="row">
+    <button id="btnPut">PUT</button>
+    <button id="btnDelete" style="background:#fee;">DELETE (reset)</button>
+  </div>
+  <pre id="putOut">(hasil PUT/DELETE)</pre>
+
+<script>
+const getOut = document.getElementById('getOut');
+const postOut = document.getElementById('postOut');
+const putOut = document.getElementById('putOut');
+
+document.getElementById('btnGet').onclick = async () => {
+  const r = await fetch('/api/jsonbin');
+  getOut.textContent = JSON.stringify(await r.json(), null, 2);
+};
+
+document.getElementById('btnPost').onclick = async () => {
+  const text = document.getElementById('postText').value || 'empty';
+  const r = await fetch('/api/jsonbin', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ item: { text } })
+  });
+  postOut.textContent = JSON.stringify(await r.json(), null, 2);
+};
+
+async function doPut(body) {
+  const r = await fetch('/api/jsonbin', {
+    method: 'PUT',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  putOut.textContent = JSON.stringify(await r.json(), null, 2);
+}
+
+document.getElementById('btnPut').onclick = async () => {
+  let body; try { body = JSON.parse(document.getElementById('putBody').value); }
+  catch { alert('JSON tidak valid'); return; }
+  doPut(body);
+};
+
+document.getElementById('btnDelete').onclick = async () => {
+  const r = await fetch('/api/jsonbin', { method: 'DELETE' });
+  putOut.textContent = JSON.stringify(await r.json(), null, 2);
+};
+</script>
+</body>
+</html>
