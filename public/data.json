@@ -1,0 +1,5 @@
+{
+  "message": "Hello from static JSON!",
+  "version": 1,
+  "items": ["example", "demo"]
+}
